@@ -1,104 +1,885 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abbosbek Space | Kelajak sari</title>
-    <style>
-        /* Umumiy ko'rinish */
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #ffffff;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Abbosxon | Developer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-        /* Konteyner */
-        .container {
-            text-align: center;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            max-width: 90%;
-        }
+  <style>
+    :root {
+      --bg: #030711;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --accent: #7c6aff;
+      --accent2: #38c9c9;
+      --accent3: #ff6b9d;
+      --text: #e8e6f0;
+      --muted: #6e6a8a;
+    }
 
-        /* Sarlavha animatsiyasi */
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #38bdf8, #818cf8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: fadeIn 2s ease-in-out;
-        }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        p {
-            font-size: 1.1rem;
-            color: #94a3b8;
-            margin-bottom: 25px;
-        }
+    html { scroll-behavior: smooth; }
 
-        /* Tugma (Domen uchun ramziy) */
-        .status-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            background: #0ea5e9;
-            color: white;
-            border-radius: 50px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.8rem;
-            box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
-        }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
 
-        /* Kosmos effektlari (Aylana) */
-        .circle {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, transparent 70%);
-            z-index: -1;
-            animation: pulse 4s infinite alternate;
-        }
+    /* ── CUSTOM CURSOR ── */
+    #cursor {
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed; pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease, background 0.3s ease;
+      transform: translate(-50%, -50%);
+    }
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid rgba(124,106,255,0.5);
+      border-radius: 50%;
+      position: fixed; pointer-events: none;
+      z-index: 9998;
+      transition: transform 0.4s cubic-bezier(.23,1,.32,1), opacity 0.3s;
+      transform: translate(-50%, -50%);
+    }
+    body:hover #cursor-ring { opacity: 1; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    /* ── CANVAS STARFIELD ── */
+    #starfield {
+      position: fixed; inset: 0;
+      z-index: 0; pointer-events: none;
+    }
 
-        @keyframes pulse {
-            from { transform: scale(1); opacity: 0.5; }
-            to { transform: scale(1.2); opacity: 0.8; }
-        }
+    /* ── NEBULA BLOBS ── */
+    .nebula {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+      animation: nebula-drift 20s ease-in-out infinite alternate;
+    }
+    .n1 { width: 600px; height: 600px; background: rgba(124,106,255,0.12); top: -200px; left: -200px; }
+    .n2 { width: 500px; height: 500px; background: rgba(56,201,201,0.09); bottom: 0; right: -150px; animation-delay: -8s; }
+    .n3 { width: 400px; height: 400px; background: rgba(255,107,157,0.07); top: 40%; left: 30%; animation-delay: -4s; }
+    @keyframes nebula-drift {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(30px, 40px) scale(1.08); }
+    }
 
-        /* Mobil qurilmalar uchun */
-        @media (max-width: 480px) {
-            h1 { font-size: 1.8rem; }
-            p { font-size: 1rem; }
-        }
-    </style>
+    /* ── LAYOUT ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 2.5rem; position: relative; z-index: 1; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.2rem 0;
+      background: rgba(3,7,17,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s;
+    }
+    .nav-inner {
+      max-width: 1100px; margin: 0 auto;
+      padding: 0 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 1rem; color: var(--accent);
+      text-decoration: none; letter-spacing: 0.05em;
+    }
+    .nav-logo span { color: var(--accent2); }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.85rem; color: var(--muted);
+      text-decoration: none; letter-spacing: 0.08em;
+      text-transform: uppercase; font-family: 'Space Mono', monospace;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; left: 0; bottom: -3px;
+      width: 0; height: 1px; background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center;
+      padding: 6rem 0 4rem;
+      position: relative;
+    }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-family: 'Space Mono', monospace; font-size: 0.72rem;
+      color: var(--accent2); letter-spacing: 0.15em; text-transform: uppercase;
+      background: rgba(56,201,201,0.08); border: 1px solid rgba(56,201,201,0.2);
+      padding: 0.4rem 0.9rem; border-radius: 2rem;
+      margin-bottom: 1.6rem;
+      animation: fade-up 0.8s ease both;
+    }
+    .hero-tag .dot {
+      width: 6px; height: 6px; background: var(--accent2);
+      border-radius: 50%; animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif; font-size: clamp(2.8rem, 5vw, 4.2rem);
+      font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;
+      animation: fade-up 0.8s 0.1s ease both;
+    }
+    .hero h1 .name { color: var(--accent); }
+    .hero h1 .role {
+      display: block; font-size: 0.55em; font-weight: 400;
+      color: var(--muted); font-family: 'DM Sans', sans-serif;
+      letter-spacing: 0.02em; margin-top: 0.4rem;
+    }
+
+    .hero-desc {
+      color: var(--muted); line-height: 1.7; font-size: 1rem;
+      margin: 1.6rem 0 2.4rem;
+      animation: fade-up 0.8s 0.2s ease both;
+      max-width: 440px;
+    }
+
+    .hero-cta {
+      display: flex; gap: 1rem;
+      animation: fade-up 0.8s 0.3s ease both;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: var(--accent); color: #fff;
+      padding: 0.75rem 1.6rem; border-radius: 0.5rem;
+      font-size: 0.9rem; font-weight: 500;
+      text-decoration: none; transition: all 0.25s ease;
+      border: none; cursor: none;
+    }
+    .btn-primary:hover { background: #9381ff; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,106,255,0.4); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: transparent; color: var(--text);
+      padding: 0.75rem 1.6rem; border-radius: 0.5rem;
+      font-size: 0.9rem; font-weight: 500;
+      text-decoration: none; transition: all 0.25s ease;
+      border: 1px solid var(--border); cursor: none;
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* HERO VISUAL */
+    .hero-visual {
+      position: relative; display: flex; align-items: center; justify-content: center;
+      animation: fade-up 0.8s 0.4s ease both;
+    }
+    .orbit-container {
+      position: relative; width: 320px; height: 320px;
+    }
+    .orbit-ring {
+      position: absolute; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .or1 { inset: 0; animation: spin 30s linear infinite; }
+    .or2 { inset: 30px; animation: spin 20s linear infinite reverse; border-style: dashed; border-color: rgba(124,106,255,0.15); }
+    .or3 { inset: 60px; animation: spin 15s linear infinite; border-color: rgba(56,201,201,0.12); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .orbit-center {
+      position: absolute; inset: 80px;
+      background: radial-gradient(135deg, rgba(124,106,255,0.3) 0%, rgba(56,201,201,0.15) 100%);
+      border-radius: 50%;
+      border: 1px solid rgba(124,106,255,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Space Mono', monospace; font-size: 0.65rem;
+      color: var(--accent2); text-align: center; line-height: 1.6;
+      box-shadow: 0 0 60px rgba(124,106,255,0.2), inset 0 0 30px rgba(56,201,201,0.05);
+    }
+
+    /* Orbit dot */
+    .orbit-dot {
+      position: absolute; width: 10px; height: 10px; border-radius: 50%;
+      top: 50%; left: 50%;
+      transform-origin: 0 0;
+    }
+    .od1 { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+    .od2 { background: var(--accent2); box-shadow: 0 0 10px var(--accent2); width: 7px; height: 7px; }
+    .od3 { background: var(--accent3); box-shadow: 0 0 10px var(--accent3); width: 5px; height: 5px; }
+
+    /* ── SECTIONS ── */
+    section { padding: 6rem 0; position: relative; z-index: 1; }
+
+    .section-label {
+      font-family: 'Space Mono', monospace; font-size: 0.72rem;
+      color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800; letter-spacing: -0.03em;
+      margin-bottom: 3rem;
+    }
+    .section-title span { color: var(--accent); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    /* ── ABOUT ── */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .about-text p {
+      color: var(--muted); line-height: 1.8; margin-bottom: 1rem; font-size: 0.97rem;
+    }
+    .about-text p strong { color: var(--text); font-weight: 500; }
+
+    .edu-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.4rem 1.6rem;
+      margin-top: 1.2rem;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .edu-card:hover { border-color: rgba(124,106,255,0.35); transform: translateY(-3px); }
+    .edu-card .edu-label {
+      font-family: 'Space Mono', monospace; font-size: 0.65rem;
+      color: var(--accent2); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.4rem;
+    }
+    .edu-card .edu-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+    .edu-card .edu-sub { font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* STATS */
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .stat-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 0.9rem; padding: 1.4rem;
+      text-align: center; transition: all 0.3s ease;
+    }
+    .stat-box:hover { border-color: rgba(124,106,255,0.3); transform: translateY(-3px); }
+    .stat-box .stat-num {
+      font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-box .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* ── EXPERIENCE ── */
+    .exp-list { display: flex; flex-direction: column; gap: 1.2rem; }
+    .exp-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 1rem; padding: 1.6rem 2rem;
+      display: grid; grid-template-columns: auto 1fr auto;
+      gap: 1.5rem; align-items: center;
+      transition: all 0.3s ease; position: relative; overflow: hidden;
+    }
+    .exp-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px; background: linear-gradient(180deg, var(--accent), var(--accent2));
+      transform: scaleY(0); transform-origin: top; transition: transform 0.3s;
+    }
+    .exp-card:hover { border-color: rgba(124,106,255,0.3); transform: translateX(4px); }
+    .exp-card:hover::before { transform: scaleY(1); }
+
+    .exp-icon {
+      width: 48px; height: 48px; border-radius: 0.75rem;
+      background: rgba(124,106,255,0.12); border: 1px solid rgba(124,106,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+    }
+    .exp-info .exp-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+    .exp-info .exp-sub { font-size: 0.82rem; color: var(--muted); margin-top: 0.3rem; line-height: 1.5; }
+    .exp-years {
+      font-family: 'Space Mono', monospace; font-size: 0.75rem;
+      color: var(--accent2); text-align: right; white-space: nowrap;
+    }
+
+    /* ── PROJECTS ── */
+    .projects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.4rem; }
+    .project-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 1.2rem; padding: 1.8rem 2rem;
+      transition: all 0.3s ease; position: relative; overflow: hidden;
+    }
+    .project-card::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 80% 20%, rgba(124,106,255,0.08), transparent 60%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .project-card:hover { border-color: rgba(124,106,255,0.35); transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+    .project-card:hover::after { opacity: 1; }
+
+    .project-card.featured { grid-column: span 2; display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; }
+    .project-card.featured::after {
+      background: radial-gradient(circle at 90% 50%, rgba(56,201,201,0.1), transparent 60%);
+    }
+
+    .project-tag {
+      font-family: 'Space Mono', monospace; font-size: 0.65rem;
+      color: var(--accent3); letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+    .project-featured-tag {
+      font-family: 'Space Mono', monospace; font-size: 0.65rem;
+      color: var(--accent2); letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+    .project-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.15rem; margin-bottom: 0.6rem; }
+    .project-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+
+    .project-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.82rem; color: var(--accent2); text-decoration: none;
+      margin-top: 1.2rem; font-family: 'Space Mono', monospace;
+      transition: gap 0.2s ease;
+    }
+    .project-link:hover { gap: 0.7rem; }
+
+    .project-visual {
+      width: 100px; height: 100px; flex-shrink: 0;
+      background: rgba(56,201,201,0.08); border: 1px solid rgba(56,201,201,0.2);
+      border-radius: 1rem; display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+    }
+
+    /* ── CONTACT ── */
+    .contact-wrap {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
+    }
+    .contact-desc { color: var(--muted); line-height: 1.8; font-size: 0.97rem; }
+
+    .social-list { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+    .social-card {
+      display: flex; align-items: center; gap: 1.2rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 0.9rem; padding: 1rem 1.4rem;
+      text-decoration: none; color: var(--text);
+      transition: all 0.3s ease; position: relative; overflow: hidden;
+    }
+    .social-card::before {
+      content: ''; position: absolute; inset: 0;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .social-card.tg::before { background: linear-gradient(135deg, rgba(0,136,204,0.12), transparent); }
+    .social-card.ig::before { background: linear-gradient(135deg, rgba(228,64,95,0.12), transparent); }
+    .social-card.gh::before { background: linear-gradient(135deg, rgba(255,255,255,0.06), transparent); }
+
+    .social-card:hover { transform: translateX(6px); }
+    .social-card.tg:hover { border-color: rgba(0,136,204,0.5); }
+    .social-card.ig:hover { border-color: rgba(228,64,95,0.5); }
+    .social-card.gh:hover { border-color: rgba(200,200,200,0.3); }
+    .social-card:hover::before { opacity: 1; }
+
+    .social-icon {
+      width: 42px; height: 42px; border-radius: 0.6rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.15rem; flex-shrink: 0;
+    }
+    .social-card.tg .social-icon { background: rgba(0,136,204,0.15); color: #29b6f6; }
+    .social-card.ig .social-icon {
+      background: linear-gradient(135deg, rgba(228,64,95,0.2), rgba(255,168,0,0.1));
+      color: #f48fb1;
+    }
+    .social-card.gh .social-icon { background: rgba(255,255,255,0.07); color: #e0e0e0; }
+
+    .social-info .social-name { font-weight: 600; font-size: 0.92rem; }
+    .social-info .social-handle {
+      font-family: 'Space Mono', monospace; font-size: 0.72rem;
+      color: var(--muted); margin-top: 0.15rem;
+    }
+    .social-arrow {
+      margin-left: auto; color: var(--muted); font-size: 0.8rem;
+      transition: transform 0.2s, color 0.2s;
+    }
+    .social-card:hover .social-arrow { transform: translateX(4px); color: var(--text); }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2.5rem 0; border-top: 1px solid var(--border);
+      position: relative; z-index: 1;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto; padding: 0 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-copy { font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--muted); }
+    .footer-status {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--muted);
+    }
+    .status-dot {
+      width: 6px; height: 6px; background: #4ade80; border-radius: 50%;
+      box-shadow: 0 0 8px #4ade80;
+      animation: pulse-green 2.5s ease infinite;
+    }
+    @keyframes pulse-green {
+      0%,100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: all 0.7s cubic-bezier(.23,1,.32,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(124,106,255,0.3); border-radius: 2px; }
+
+    /* ── SKILL TAGS ── */
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.4rem; }
+    .skill-tag {
+      font-family: 'Space Mono', monospace; font-size: 0.68rem;
+      color: var(--accent); background: rgba(124,106,255,0.08);
+      border: 1px solid rgba(124,106,255,0.2); padding: 0.3rem 0.7rem;
+      border-radius: 0.3rem; letter-spacing: 0.05em;
+    }
+
+    /* GLOW LINE */
+    .glow-line {
+      height: 1px; margin: 0;
+      background: linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%);
+      opacity: 0.3;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="circle"></div>
+  <!-- Cursor -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
 
-    <div class="container">
-        <h1>abbosbek.space</h1>
-        <p>Koinotdagi yangi manzilingiz tez kunda ishga tushadi!</p>
-        <div class="status-badge">Tez kunda</div>
+  <!-- Nebula -->
+  <div class="nebula n1"></div>
+  <div class="nebula n2"></div>
+  <div class="nebula n3"></div>
+
+  <!-- Starfield canvas -->
+  <canvas id="starfield"></canvas>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-logo" href="#">&lt;<span>abbos</span>/&gt;</a>
+      <ul class="nav-links">
+        <li><a href="#about">Haqimda</a></li>
+        <li><a href="#experience">Tajriba</a></li>
+        <li><a href="#projects">Loyihalar</a></li>
+        <li><a href="#contact">Kontakt</a></li>
+      </ul>
     </div>
+  </nav>
 
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-tag">
+            <span class="dot"></span>
+            Ochiq Ishga Tayyor
+          </div>
+          <h1>
+            Salom, men<br/>
+            <span class="name">Abbosxon</span>
+            <span class="role">Python Developer &amp; Web Designer</span>
+          </h1>
+          <p class="hero-desc">
+            Telegram botlari va web interfeyslari yarataman. 
+            Kodlarim qatorida <strong>3 yillik</strong> tajriba va cheksiz qiziquvchanlik bor. 
+            Kosmosga o'xshash keng imkoniyatlar — barchasi bir qo'lda.
+          </p>
+          <div class="hero-cta">
+            <a href="#projects" class="btn-primary">
+              <i class="fa-solid fa-rocket"></i> Loyihalarni ko'r
+            </a>
+            <a href="#contact" class="btn-ghost">
+              <i class="fa-solid fa-paper-plane"></i> Bog'lanish
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="orbit-container">
+            <div class="orbit-ring or1">
+              <div class="orbit-dot od1" style="animation: orbit1 8s linear infinite;"></div>
+            </div>
+            <div class="orbit-ring or2">
+              <div class="orbit-dot od2" style="animation: orbit2 5s linear infinite;"></div>
+            </div>
+            <div class="orbit-ring or3">
+              <div class="orbit-dot od3" style="animation: orbit3 3.5s linear infinite;"></div>
+            </div>
+            <div class="orbit-center">
+              <div>
+                <div style="font-size:0.9rem;margin-bottom:0.3rem;">👨‍💻</div>
+                abbos<br/>dev
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="glow-line"></div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <div class="section-label">// 01. haqimda</div>
+      <div class="section-title">Kim <span>men</span>?</div>
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>
+            Men <strong>Abbosxon</strong> — Toshkentdagi <strong>79-maktab</strong> o'quvchisi va 
+            ishtiyoqli dasturchi. <strong>Python</strong> tilida telegram botlar yozishni 3 yildan 
+            beri mashq qilyapman, so'nggi 9 oyda esa <strong>Web UI/UX</strong> sohasiga qiziqdim.
+          </p>
+          <p>
+            <strong>OXFORD × ALGHORITIM</strong> ta'lim markazida dasturlash asoslarini chuqur 
+            o'rgandim. Hozirda shaxsiy loyihalarim orqali real foydalanuvchilar bilan ishlayapman.
+          </p>
+          <p>
+            Mening maqsadim — oddiy muammolarni elegant kod bilan hal qilish. 
+            Katta loyihalar uchun boshlanishi kichik bo'lishi mumkin, lekin yo'nalish aniq!
+          </p>
+          <div class="skill-tags">
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">python-telegram-bot</span>
+            <span class="skill-tag">HTML/CSS</span>
+            <span class="skill-tag">Tailwind CSS</span>
+            <span class="skill-tag">JavaScript</span>
+            <span class="skill-tag">UI/UX</span>
+          </div>
+
+          <div class="edu-card reveal" style="transition-delay:0.1s">
+            <div class="edu-label">📚 Ta'lim</div>
+            <div class="edu-name">79-maktab, Toshkent</div>
+            <div class="edu-sub">Hozirda tahsil olmoqdaman</div>
+          </div>
+          <div class="edu-card reveal" style="transition-delay:0.2s">
+            <div class="edu-label">🎓 Markaz</div>
+            <div class="edu-name">OXFORD × ALGHORITIM</div>
+            <div class="edu-sub">Dasturlash — Python & Algoritimlar</div>
+          </div>
+        </div>
+
+        <div class="reveal" style="transition-delay:0.15s">
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-num">3+</div>
+              <div class="stat-label">Yil Python tajriba</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num">9</div>
+              <div class="stat-label">Oy Web UI/UX</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num">∞</div>
+              <div class="stat-label">Qiziquvchanlik</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num">🤖</div>
+              <div class="stat-label">Telegram Bot expert</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="container">
+      <div class="section-label">// 02. tajriba</div>
+      <div class="section-title">Nima <span>qilaman</span>?</div>
+      <div class="exp-list">
+        <div class="exp-card reveal">
+          <div class="exp-icon" style="background:rgba(41,182,246,0.1);border-color:rgba(41,182,246,0.2);color:#29b6f6;">
+            <i class="fa-brands fa-telegram"></i>
+          </div>
+          <div class="exp-info">
+            <div class="exp-title">Telegram Bot Dasturchi</div>
+            <div class="exp-sub">
+              python-telegram-bot kutubxonasi yordamida murakkab botlar yarataman. 
+              Foydalanuvchi interfeyslari, inline klaviaturalar, webhook integratsiyalar va ma'lumotlar bazasi bilan ishlash.
+            </div>
+          </div>
+          <div class="exp-years">3 yil</div>
+        </div>
+
+        <div class="exp-card reveal" style="transition-delay:0.1s">
+          <div class="exp-icon" style="background:rgba(124,106,255,0.1);border-color:rgba(124,106,255,0.2);color:var(--accent);">
+            <i class="fa-solid fa-palette"></i>
+          </div>
+          <div class="exp-info">
+            <div class="exp-title">Web UI/UX Dizaynchi</div>
+            <div class="exp-sub">
+              HTML, CSS, Tailwind CSS va JavaScript yordamida foydalanuvchi uchun qulay va chiroyli interfeyslari yarataman. 
+              Dizayn prinsiplari va responsiv layoutlar bilan tanishman.
+            </div>
+          </div>
+          <div class="exp-years">9 oy</div>
+        </div>
+
+        <div class="exp-card reveal" style="transition-delay:0.2s">
+          <div class="exp-icon" style="background:rgba(56,201,201,0.1);border-color:rgba(56,201,201,0.2);color:var(--accent2);">
+            <i class="fa-solid fa-code"></i>
+          </div>
+          <div class="exp-info">
+            <div class="exp-title">Python Dasturchi</div>
+            <div class="exp-sub">
+              Python tilida turli skriptlar, avtomatlashtirish vositalari va API integratsiyalari. 
+              Algoritmlar va ma'lumotlar tuzilmalari bilan ishlash tajribasi.
+            </div>
+          </div>
+          <div class="exp-years">3+ yil</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="container">
+      <div class="section-label">// 03. loyihalar</div>
+      <div class="section-title">Mening <span>ishlarim</span></div>
+      <div class="projects-grid">
+
+        <!-- Featured -->
+        <div class="project-card featured reveal">
+          <div>
+            <div class="project-featured-tag">⭐ Asosiy Loyiha</div>
+            <div class="project-name">eMaktab Rate Bot</div>
+            <div class="project-desc">
+              eMaktab tizimi bilan ishlash uchun Telegram boti. 
+              O'quvchilarga baholarini tekshirish, jadvallarni ko'rish va boshqa maktab ma'lumotlariga 
+              qulay kirish imkonini beradi. Real foydalanuvchilar bilan ishlaydi.
+            </div>
+            <div class="skill-tags" style="margin-bottom:0.4rem;">
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">python-telegram-bot</span>
+              <span class="skill-tag">API</span>
+            </div>
+            <a href="https://t.me/emaktab_rate_bot" target="_blank" class="project-link">
+              <i class="fa-brands fa-telegram"></i> @emaktab_rate_bot <i class="fa-solid fa-arrow-right" style="font-size:0.7rem;"></i>
+            </a>
+          </div>
+          <div class="project-visual">🤖</div>
+        </div>
+
+        <!-- Blog -->
+        <div class="project-card reveal" style="transition-delay:0.1s">
+          <div class="project-tag">💻 Web</div>
+          <div class="project-name">Shaxsiy Blog Sayt</div>
+          <div class="project-desc">
+            Siz hozir ko'rayotgan bu sayt — mening shaxsiy portfolio va blog sahifam. 
+            Kosmik dizayn, CSS animatsiyalar va Tailwind CSS bilan qurilgan.
+          </div>
+          <div class="skill-tags">
+            <span class="skill-tag">HTML</span>
+            <span class="skill-tag">CSS</span>
+            <span class="skill-tag">Tailwind</span>
+          </div>
+        </div>
+
+        <!-- More -->
+        <div class="project-card reveal" style="transition-delay:0.2s; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; border-style:dashed;">
+          <div style="font-size:2rem;margin-bottom:0.8rem;">🚀</div>
+          <div class="project-name" style="font-size:1rem;">Ko'proq loyihalar</div>
+          <div class="project-desc" style="font-size:0.8rem;">Telegram loyihalarim GitHub sahifamda joylashgan</div>
+          <a href="https://github.com/mutalliyev011" target="_blank" class="project-link" style="margin-top:0.8rem;">
+            <i class="fa-brands fa-github"></i> github.com/mutalliyev011
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-label">// 04. kontakt</div>
+      <div class="section-title">Bog'la<span>ning</span></div>
+      <div class="contact-wrap">
+        <div class="reveal">
+          <p class="contact-desc">
+            Yangi loyiha, hamkorlik yoki shunchaki suhbat uchun menga yozing. 
+            Telegram orqali tezroq javob beraman — odatda bir necha soat ichida.
+          </p>
+          <p class="contact-desc" style="margin-top:0.8rem;">
+            Botlar, web dizayn yoki boshqa texnik savollar bo'lsa — xursandman!
+          </p>
+
+          <div style="margin-top:2rem; padding:1.2rem 1.6rem; background:var(--surface); border:1px solid var(--border); border-radius:0.9rem;">
+            <div style="font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--accent2); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:0.5rem;">📍 Joylashuv</div>
+            <div style="font-size:0.9rem;">Toshkent, O'zbekiston 🇺🇿</div>
+          </div>
+        </div>
+
+        <div class="social-list reveal" style="transition-delay:0.15s;">
+
+          <a href="https://t.me/mozirux" target="_blank" class="social-card tg">
+            <div class="social-icon"><i class="fa-brands fa-telegram"></i></div>
+            <div class="social-info">
+              <div class="social-name">Telegram</div>
+              <div class="social-handle">@mozirux</div>
+            </div>
+            <i class="fa-solid fa-arrow-right social-arrow"></i>
+          </a>
+
+          <a href="https://instagram.com/aprellik.sahifasi" target="_blank" class="social-card ig">
+            <div class="social-icon"><i class="fa-brands fa-instagram"></i></div>
+            <div class="social-info">
+              <div class="social-name">Instagram</div>
+              <div class="social-handle">@aprellik.sahifasi</div>
+            </div>
+            <i class="fa-solid fa-arrow-right social-arrow"></i>
+          </a>
+
+          <a href="https://github.com/mutalliyev011" target="_blank" class="social-card gh">
+            <div class="social-icon"><i class="fa-brands fa-github"></i></div>
+            <div class="social-info">
+              <div class="social-name">GitHub</div>
+              <div class="social-handle">mutalliyev011</div>
+            </div>
+            <i class="fa-solid fa-arrow-right social-arrow"></i>
+          </a>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-copy">© 2025 Abbosxon · Barcha huquqlar himoyalangan</div>
+      <div class="footer-status">
+        <div class="status-dot"></div>
+        Onlayn &amp; faol
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ── CURSOR ── */
+    const cur = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cur.style.left = mx+'px'; cur.style.top = my+'px'; });
+    (function animRing() {
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx+'px'; ring.style.top = ry+'px';
+      requestAnimationFrame(animRing);
+    })();
+    document.querySelectorAll('a,button').forEach(el => {
+      el.addEventListener('mouseenter', () => { cur.style.transform = 'translate(-50%,-50%) scale(2.5)'; cur.style.background = 'var(--accent2)'; });
+      el.addEventListener('mouseleave', () => { cur.style.transform = 'translate(-50%,-50%) scale(1)'; cur.style.background = 'var(--accent)'; });
+    });
+
+    /* ── STARFIELD ── */
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let W, H, stars = [];
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    function initStars() {
+      stars = [];
+      const N = Math.floor((W * H) / 4500);
+      for (let i = 0; i < N; i++) {
+        stars.push({
+          x: Math.random() * W, y: Math.random() * H,
+          r: Math.random() * 1.4 + 0.2,
+          alpha: Math.random() * 0.7 + 0.1,
+          da: (Math.random() - 0.5) * 0.008,
+          speed: Math.random() * 0.06 + 0.01
+        });
+      }
+    }
+    function drawStars() {
+      ctx.clearRect(0, 0, W, H);
+      stars.forEach(s => {
+        s.alpha += s.da;
+        if (s.alpha <= 0.05 || s.alpha >= 0.85) s.da *= -1;
+        s.y -= s.speed;
+        if (s.y < -2) s.y = H + 2;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${s.alpha})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(drawStars);
+    }
+    resize(); initStars(); drawStars();
+    window.addEventListener('resize', () => { resize(); initStars(); });
+
+    /* ── ORBIT DOTS ── */
+    function animOrbit(dotClass, ringClass, duration) {
+      const ring = document.querySelector(ringClass);
+      const dot = ring.querySelector(dotClass);
+      if (!ring || !dot) return;
+      let angle = Math.random() * Math.PI * 2;
+      const rect = () => ring.getBoundingClientRect();
+      (function loop() {
+        angle += (Math.PI * 2) / (duration * 60);
+        const r = ring.offsetWidth / 2;
+        const cx = ring.offsetWidth / 2;
+        const cy = ring.offsetHeight / 2;
+        const x = cx + r * Math.cos(angle) - dot.offsetWidth / 2;
+        const y = cy + r * Math.sin(angle) - dot.offsetHeight / 2;
+        dot.style.left = x + 'px';
+        dot.style.top = y + 'px';
+        dot.style.position = 'absolute';
+        dot.style.transformOrigin = 'unset';
+        requestAnimationFrame(loop);
+      })();
+    }
+    window.addEventListener('load', () => {
+      animOrbit('.od1', '.or1', 8);
+      animOrbit('.od2', '.or2', 5);
+      animOrbit('.od3', '.or3', 3.5);
+    });
+
+    /* ── SCROLL REVEAL ── */
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
-
