@@ -10,6 +10,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
+  <script>
+  // Agar foydalanuvchi sahifaga to'g'ridan-to'g'ri kirgan bo'lsa (tashqaridan)
+  if (!document.referrer.includes('abbosxon.space/about')) {
+    window.location.href = '/about';
+  }
+</script>
+
   <style>
     :root {
       --bg: #030711;
